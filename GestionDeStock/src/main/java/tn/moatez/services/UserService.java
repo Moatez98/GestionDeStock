@@ -1,15 +1,15 @@
 package tn.moatez.services;
 
-import tn.moatez.model.User;
+import tn.moatez.dto.UserDTO;
+
 
 import java.util.*;
 
 public interface UserService {
-    List<User> obtenirTousLesUtilisateurs();
-    User obtenirUtilisateurParIdentifiant(Long id);
-    User sauvegarderUtilisateur(User user);
+    List<UserDTO> getAllUsers();
+    UserDTO getUserById(Long id);
+    UserDTO saveUser(UserDTO userDTO);
 
-    User mettreAJourUtilisateur(Long id , User user);
+    UserDTO updateUser(Long id , UserDTO userDTO);
 
-    User desactiverUtilisateur(Long id);
 }

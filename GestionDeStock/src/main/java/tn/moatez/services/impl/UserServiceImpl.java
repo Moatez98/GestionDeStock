@@ -1,11 +1,13 @@
 package tn.moatez.services.impl;
 
 import org.springframework.stereotype.Service;
+import tn.moatez.dto.UserDTO;
 import tn.moatez.model.User;
 import tn.moatez.repository.UserRepository;
 import tn.moatez.services.UserService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -14,37 +16,36 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     @Override
-    public List<User> obtenirTousLesUtilisateurs() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        List<User> usersEntity = userRepository.findAll();
+        return usersEntity.stream()
+                .map(UserDTO::mapEntityToDto)
+                .collect(Collectors.toList());
+
     }
 
     @Override
-    public User obtenirUtilisateurParIdentifiant(Long id) {
-        return userRepository.findById(id).orElseThrow();
-    }
-
-    @Override
-    public User sauvegarderUtilisateur(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User mettreAJourUtilisateur(Long id, User user) {
-        if(userRepository.existsById(id)){
-            return userRepository.save(user);
-        }
+    public UserDTO getUserById(Long id) {
+        User entity = userRepository.findById(id).orElse(null);
+        if (entity != null)
+            return UserDTO.mapEntityToDto(entity);
         return null;
     }
 
     @Override
-    public User desactiverUtilisateur(Long id) {
-        if(userRepository.existsById(id)){
-            User user = userRepository.findById(id).orElseThrow();
-            user.setActive(false);
-            userRepository.save(user);
-            return user;
+    public UserDTO saveUser(UserDTO userDTO) {
+        User entity = userRepository
+                .save(User.mapDtoToEntity(userDTO));
+        return UserDTO.mapEntityToDto(entity);
+    }
+
+    @Override
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+        if (userRepository.existsById(id)) {
+            User entity = userRepository
+                    .save(User.mapDtoToEntity(userDTO));
+            return UserDTO.mapEntityToDto(entity);
         }
         return null;
     }
